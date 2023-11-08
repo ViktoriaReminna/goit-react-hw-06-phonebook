@@ -1,12 +1,31 @@
+import { useDispatch, useSelector } from 'react-redux';
+
 import { InputFilter } from './ContactFilter.styled';
 
-export const ContactFilter = ({ value, onChange }) => {
+import { getFilter } from '../../redux/selectors';
+
+import { filterContacts } from '../../redux/contactSlice';
+import 'react-toastify/dist/ReactToastify.css';
+
+export const ContactFilter = () => {
+  const dispatch = useDispatch();
+  const filtered = useSelector(getFilter);
+
+  const onChange = event => {
+    const { value } = event.target;
+
+    dispatch(filterContacts(value.trim()));
+  };
+
   return (
     <InputFilter
       type="text"
-      value={value}
-      onChange={evt => onChange(evt.target.value)}
-      placeholder="Filter Contacts"
+      name="filter"
+      placeholder="Find contacts by name"
+      onChange={event => {
+        onChange(event);
+      }}
+      value={filtered}
     />
   );
 };

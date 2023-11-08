@@ -1,57 +1,76 @@
-import { Formik } from 'formik';
+import { addContact } from '../../redux/contactSlice';
 import { nanoid } from 'nanoid';
-import * as Yup from 'yup';
-import {
-  StyledForm,
-  StyledField,
-  Label,
-  StyledError,
-  Button,
-} from './FormContacts.styled';
+import React from 'react';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { StyledForm, StyledField, Label, Button } from './FormContacts.styled';
+import { ToastContainer, toast } from 'react-toastify';
 
-const schema = Yup.object().shape({
-  name: Yup.string().min(1, 'Too Short!').required('Required'),
-  number: Yup.string().min(6).max(10).required('Required'),
-});
-const initialValues = {
-  name: '',
-  number: '',
-};
-export const FormContacts = ({ onAddContact }) => {
-  const handleSubmit = (values, { resetForm }) => {
-    onAddContact({ ...values, id: nanoid() });
-    resetForm();
+export const FormContacts = () => {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+
+  const dispatch = useDispatch();
+
+  const onInputChange = event => {
+    const { name, value } = event.currentTarget;
+
+    switch (name) {
+      case 'name':
+        setName(value);
+        break;
+
+      case 'number':
+        setNumber(value);
+        break;
+
+      default:
+        return;
+    }
   };
+
+  const onSubmit = event => {
+    event.preventDefault();
+    const contact = {
+      name: name,
+      number: number,
+      id: nanoid(),
+    };
+    toast.success(`${contact.name} added to contacts.`);
+    dispatch(addContact(contact));
+    setName('');
+    setNumber('');
+  };
+
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={schema}
-      onSubmit={handleSubmit}
-    >
-      <StyledForm autoComplete="off">
+    <div>
+      <StyledForm onSubmit={onSubmit}>
         <Label>
           Name
           <StyledField
             type="text"
             name="name"
-            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+            placeholder="Name"
             title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
             required
+            value={name}
+            onChange={onInputChange}
           />
         </Label>
         <Label>
-          Number
           <StyledField
             type="tel"
             name="number"
-            pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+            placeholder="Number"
             title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
             required
-          ></StyledField>
-          <StyledError component="div" name="number" />
+            value={number}
+            onChange={onInputChange}
+          />
         </Label>
         <Button type="submit">Add contact</Button>
       </StyledForm>
-    </Formik>
+      <ToastContainer />
+    </div>
   );
 };
