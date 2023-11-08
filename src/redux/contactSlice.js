@@ -1,12 +1,21 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { data } from './data';
+import { toast } from 'react-toastify';
 
 export const contactsSlice = createSlice({
   name: 'contacts',
   initialState: { contacts: [...data], filtered: '' },
   reducers: {
     addContact: (state, action) => {
-      state.contacts.push(action.payload);
+      const newContact = action.payload;
+
+      if (state.contacts.some(contact => contact.name === newContact.name)) {
+        
+        toast.error(`${newContact.name} is already in contacts.`);
+        return;
+      }
+
+      state.contacts.push(newContact);
     },
     filterContacts: (state, action) => {
       state.filtered = action.payload;
@@ -18,7 +27,6 @@ export const contactsSlice = createSlice({
     },
   },
 });
-
 export const contactsReducer = contactsSlice.reducer;
 
 export const { addContact, filterContacts, removeContacts } =

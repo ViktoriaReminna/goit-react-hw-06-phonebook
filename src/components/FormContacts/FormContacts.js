@@ -4,7 +4,7 @@ import React from 'react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { StyledForm, StyledField, Label, Button } from './FormContacts.styled';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 
 export const FormContacts = () => {
   const [name, setName] = useState('');
@@ -36,7 +36,7 @@ export const FormContacts = () => {
       number: number,
       id: nanoid(),
     };
-    toast.success(`${contact.name} added to contacts.`);
+
     dispatch(addContact(contact));
     setName('');
     setNumber('');
